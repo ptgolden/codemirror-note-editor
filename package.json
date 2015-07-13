@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "codemirror": "^5.4.0",
+    "markdown-it": "^4.3.0",
+    "markdown-it-container": "^1.0.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.1.2",
+    "watchify": "^3.2.3"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "scripts": {
+    "bundle": "mkdir -p dist && browserify -o dist/bundle.js index.js",
+    "watch": "mkdir -p dist && watchify --poll=100 -v -d -o dist/bundle.js index.js"
+  }
+}
