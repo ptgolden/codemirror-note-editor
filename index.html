@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <link rel="stylesheet" href="node_modules/codemirror/lib/codemirror.css">
+  <style type="text/css">
+    #main {
+      display: flex;
+      align-content: center;
+    }
+
+    #editor, #preview {
+      width: 50%;
+      padding: 1em;
+    }
+
+    #editor {
+      white-space: pre;
+    }
+
+    .document {
+      border: 1px solid #ccc;
+    }
+  </style>
+  <body>
+    <div id="main">
+      <div id="editor"><div></div></div>
+      <div id="preview">hi2</div>
+    </div>
+    <script src="./dist/bundle.js"></script>
+  </body>
+</html>
