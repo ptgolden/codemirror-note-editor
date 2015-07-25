@@ -7,7 +7,7 @@ require('./en-markdown_mode');
 
 function isInSection(cm, line) {
   var state = cm.getStateAfter(line);
-  return (state.base.inCitation || state.base.inNoteReference);
+  return state.base.inCitation;
 }
 
 function getSectionRange(cm, start=null, line) {
@@ -45,9 +45,9 @@ function getSectionRange(cm, start=null, line) {
   }
 }
 
-function updateDocumentMarks(cm, fromLine=0, toLine) {
+function sweepDocumentMarks(cm, fromLine=0, toLine) {
   var checkLine = fromLine
-    , ranges = [];
+    , ranges = []
 
   if (toLine === undefined) toLine = cm.doc.lineCount();
 
@@ -71,8 +71,32 @@ function updateDocumentMarks(cm, fromLine=0, toLine) {
     checkLine += 1;
   }
 
-  // TODO: Now, run markText for each of these ranges if they do not already
-  // exist in cm._sectionMarks
+  updateDocumentMarks(cm, ranges);
+}
+
+function updateDocumentMarks(cm, ranges) {
+  var currentMarks = cm._blockMarks.map(mark => mark.find())
+
+  if (!currentMarks.length) {
+    ranges.forEach(([fromLine, toLine]) => {
+      cm._blockMarks.push(cm.doc.markText(
+        { line: fromLine, ch: 0 },
+        { line: toLine, ch: 999 }
+      ));
+
+      for (var i = fromLine; i <= toLine; i++) {
+        if (i === fromLine) {
+          cm.doc.addLineClass(i, 'wrap', 'docblock-first');
+        }
+        cm.doc.addLineClass(i, 'wrap', 'docblock');
+        if (i === toLine) {
+          cm.doc.addLineClass(i, 'wrap', 'docblock-last');
+        }
+      }
+
+    });
+  }
+
 }
 
 module.exports = function (el, initialValue) {
@@ -81,14 +105,16 @@ module.exports = function (el, initialValue) {
     mode: 'en-markdown'
   });
 
-  editor._sectionMarks = [];
+  editor._blockMarks = [];
 
   editor.on('change', (cm, { from, to }) => {
     var fromLine = from.line
       , toLine = to.line
 
-    updateDocumentMarks(cm, fromLine, toLine);
+    sweepDocumentMarks(cm, fromLine, toLine);
   });
+
+  sweepDocumentMarks(editor);
 
   return editor;
 }
