@@ -23,6 +23,24 @@ CodeMirror.defineMode('en-markdown', function (config) {
         return null;
       }
 
+      if (stream.peek() !== '@' && stream.skipTo('@')) {
+        return null;
+      }
+
+      if (stream.next() === '@' && stream.next() === '@') {
+        let type = stream.next();
+
+        if (type === 't') {
+          stream.eatWhile(/\d/);
+          return 'inline-topic';
+        }
+
+        if (type === 'n') {
+          stream.eatWhile(/\d/);
+          return 'inline-note';
+        }
+      }
+
       stream.skipToEnd();
       return null;
     }

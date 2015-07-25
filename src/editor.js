@@ -71,6 +71,11 @@ function sweepDocumentMarks(cm, fromLine=0, toLine) {
     checkLine += 1;
   }
 
+  for (var i = fromLine; i <= toLine; i++) {
+    let topicReferences = cm.getLineTokens(i)
+      .filter(({ type }) => type === 'inline-topic')
+  }
+
   updateDocumentMarks(cm, ranges);
 }
 
